@@ -10,7 +10,7 @@ from telegram.ext import (
 )
 from deep_translator import GoogleTranslator
 
-TOKEN = os.getenv("BOT_TOKEN")  # ✅ from Railway / local env
+TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = 1144924292
 
 if not TOKEN:
@@ -28,9 +28,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "👋 Welcome!\n\n"
         "Send me text in *any language* 🌍\n"
         "I’ll translate it to *English* 🇬🇧.\n\n"
-        "Need help? Tap below 👇",
-        parse_mode="Markdown",
-        reply_markup=keyboard
+        "Need linked? Tap below 👇",
+        reply_markup=keyboard,
     )
 
 
@@ -63,13 +62,10 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["contacting_admin"] = False
         return
 
-    try:
-        translated = translator.translate(text)
-        await update.message.reply_text(
-            f"🌍 Translated to English:\n\n{translated}"
-        )
-    except Exception:
-        await update.message.reply_text("❌ Translation failed. Try again later.")
+    translated = translator.translate(text)
+    await update.message.reply_text(
+        f"🌍 Translated to English:\n\n{translated}"
+    )
 
 
 def main():
