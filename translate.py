@@ -1,5 +1,5 @@
 import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup 
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -10,11 +10,14 @@ from telegram.ext import (
 )
 from deep_translator import GoogleTranslator
 
-TOKEN = "123456:ABC-SECRET-TOKEN"
-
+TOKEN = os.getenv("BOT_TOKEN")  # ✅ from Railway / local env
 ADMIN_ID = 1144924292
 
+if not TOKEN:
+    raise RuntimeError("BOT_TOKEN is not set")
+
 translator = GoogleTranslator(source="auto", target="en")
+
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = InlineKeyboardMarkup([
@@ -30,6 +33,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=keyboard
     )
 
+
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -40,6 +44,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "✍️ Type your issue now.\n"
             "I’ll forward it to the admin."
         )
+
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
@@ -63,8 +68,9 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(
             f"🌍 Translated to English:\n\n{translated}"
         )
-    except Exception as e:
+    except Exception:
         await update.message.reply_text("❌ Translation failed. Try again later.")
+
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
@@ -75,7 +81,6 @@ def main():
 
     app.run_polling()
 
+
 if __name__ == "__main__":
     main()
-
-
