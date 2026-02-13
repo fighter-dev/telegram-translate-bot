@@ -1,4 +1,4 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup import os
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
@@ -9,7 +9,8 @@ from telegram.ext import (
 )
 from deep_translator import GoogleTranslator
 
-TOKEN = "8020886398:AAF_lhJfP0yGJt3dcVQsYAINj08TCenAcGA"
+TOKEN = "123456:ABC-SECRET-TOKEN"
+
 ADMIN_ID = 1144924292
 
 translator = GoogleTranslator(source="auto", target="en")
@@ -75,3 +76,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
