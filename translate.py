@@ -10,6 +10,17 @@ from telegram.ext import (
 )
 from deep_translator import GoogleTranslator
 
+USERS_FILE = "users.txt"
+
+def save_user(user_id: int):
+    if not os.path.exists(USERS_FILE):
+        open(USERS_FILE, "w").close()
+
+    with open(USERS_FILE, "r+") as f:
+        users = f.read().splitlines()
+        if str(user_id) not in users:
+            f.write(str(user_id) + "\n")
+
 TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = 1144924292
 
@@ -20,6 +31,8 @@ translator = GoogleTranslator(source="auto", target="en")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    save_user(user_id)
     keyboard = InlineKeyboardMarkup([
         [InlineKeyboardButton("📩 Contact Admin", callback_data="contact")]
     ])
@@ -67,11 +80,24 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"🌍 Translated to English:\n\n{translated}"
     )
 
+async def stats(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_user.id != ADMIN_ID:
+        return  # silently ignore others
+
+    if not os.path.exists(USERS_FILE):
+        count = 0
+    else:
+        with open(USERS_FILE) as f:
+            count = len(f.read().splitlines())
+
+    await update.message.reply_text(f"👥 Total users: {count}")
+
 
 def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("stats", stats))
     app.add_handler(CallbackQueryHandler(button_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
@@ -80,3 +106,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
